@@ -1,7 +1,7 @@
 # SemaforoPico
 Este projeto implementa um semáforo utilizando LEDs no Raspberry Pi Pico. O sistema alterna entre os estados vermelho, amarelo e verde em intervalos de tempo definidos, simulando o funcionamento de um semáforo real.
 
-Requisitos
+# Requisitos
 
 Para rodar este projeto, você precisará de:
 Raspberry Pi Pico
@@ -14,8 +14,8 @@ Raspberry Pi Pico
 
 -SDK do Raspberry Pi Pico configurado
 
--Esquema de Ligação
 
+# Esquema de Ligação
 
 Os LEDs devem ser conectados aos seguintes pinos:
 
@@ -28,7 +28,7 @@ Os LEDs devem ser conectados aos seguintes pinos:
 
 O outro terminal de cada LED deve ser conectado ao GND através de um resistor.
 
-Funcionamento
+# Funcionamento
 
 O código funciona da seguinte maneira:
 
