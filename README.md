@@ -47,3 +47,6 @@ Semaforo rodando
 Semáforo: VERMELHO
 Semáforo: AMARELO
 Semáforo: VERDE
+
+# Link do vídeo
+https://youtu.be/hP140QebJ8o
