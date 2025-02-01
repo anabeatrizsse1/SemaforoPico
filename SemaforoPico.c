@@ -1,77 +1,73 @@
-#include <stdio.h>
-#include "hardware/timer.h"
-#include "pico/stdlib.h"
+#include <stdio.h>               // Biblioteca para funções de entrada e saída
+#include "hardware/timer.h"      // Biblioteca para manipulação de temporizadores
+#include "pico/stdlib.h"         // Biblioteca padrão do Raspberry Pi Pico
 
-// Define o numero do pino para cada LED
+// Definição dos pinos GPIO para os LEDs
 #define LED_R 13  // LED vermelho
 #define LED_Y 12  // LED amarelo
 #define LED_G 11  // LED verde
 
-// Define tempo de espera entre cada acionamento (em milissegundos)
-#define INTERVAL_DURATION 3000
+// Definição do tempo de espera entre as mudanças do semáforo (em milissegundos)
+#define INTERVAL_DURATION 3000  
 
-// Armazena o estado atual do semaforo
-volatile int state = 1;
+// Variável global para armazenar o estado atual do semáforo (0 = vermelho, 1 = amarelo, 2 = verde)
+volatile int estado = 1;
 
-// Funcao para configurar os LEDs
-void define_all_leds() {
-  // Inicializa e define o pino do LED vermelho como saida
-  gpio_init(LED_R);
-  gpio_set_dir(LED_R, GPIO_OUT);
-  
-  // Inicializa e define o pino do LED amarelo como saida
-  gpio_init(LED_Y);
-  gpio_set_dir(LED_Y, GPIO_OUT);
-  
-  // Inicializa e define o pino do LED verde como saida
-  gpio_init(LED_G);
-  gpio_set_dir(LED_G, GPIO_OUT);
-}
-
-// Funcao que controla a troca dos LEDs no semaforo
-bool run_semaphore(struct repeating_timer *t) {
-  // Desliga todos os LEDs
+// Função chamada periodicamente pelo temporizador para atualizar o semáforo
+bool atualizar_semaforo(struct repeating_timer *t) {
+  // Desliga todos os LEDs antes de acender o próximo estado
   gpio_put(LED_R, 0);
   gpio_put(LED_Y, 0);
   gpio_put(LED_G, 0);
 
-  // Alterna o estado do semaforo e liga o LED correspondente
-  switch (state) {
+  // Liga o LED correspondente ao estado atual
+  switch (estado) {
     case 0:
-      gpio_put(LED_R, 1); // Liga o LED vermelho
+      gpio_put(LED_R, 1);  // Acende o LED vermelho
       break;
     case 1:
-      gpio_put(LED_Y, 1); // Liga o LED amarelo
+      gpio_put(LED_Y, 1);  // Acende o LED amarelo
       break;
     case 2:
-      gpio_put(LED_G, 1); // Liga o LED verde
+      gpio_put(LED_G, 1);  // Acende o LED verde
       break;
   }
 
-  // Atualiza o estado para o proximo ciclo
-  state = (state + 1) % 3;
+  // Atualiza o estado para o próximo ciclo (0 → 1 → 2 → 0)
+  estado = (estado + 1) % 3;
 
-  return true; // Retorna true para manter o timer rodando
+  return true;  // Mantém o temporizador ativo
 }
 
-int main() {
-  struct repeating_timer timer;
+// Função para configurar os pinos dos LEDs como saída
+void Config_Led() {
+  // Inicializa e configura os pinos GPIO como saída
+  gpio_init(LED_R);
+  gpio_set_dir(LED_R, GPIO_OUT);
 
-  // Inicializa a comunicacao padrao
-  stdio_init_all();
-  
-  // Configura os LEDs
-  define_all_leds();
-  
+  gpio_init(LED_Y);
+  gpio_set_dir(LED_Y, GPIO_OUT);
+
+  gpio_init(LED_G);
+  gpio_set_dir(LED_G, GPIO_OUT);
+}
+
+// Função principal
+int main() {
+  struct repeating_timer timer;  // Estrutura para o temporizador
+
+  stdio_init_all();  // Inicializa a interface serial para debug
+  Config_Led();      // Configura os LEDs como saída
+
   // Liga inicialmente o LED vermelho
   gpio_put(LED_R, 1);
-  
-  // Configura um timer para alternar os LEDs a cada intervalo definido
-  add_repeating_timer_ms(INTERVAL_DURATION, run_semaphore, NULL, &timer);
 
+  // Inicia o temporizador para chamar 'atualizar_semaforo' a cada INTERVAL_DURATION ms
+  add_repeating_timer_ms(INTERVAL_DURATION, atualizar_semaforo, NULL, &timer);
+
+  // Loop infinito para manter o programa rodando
   while (true) {
-    // Exibe uma mensagem na saida padrao indicando que o semaforo esta rodando
-    printf("Semaforo rodando\n");
-    sleep_ms(1000); // Aguarda 1 segundo antes de repetir a mensagem
+    printf("Semaforo rodando\n");  // Mensagem de depuração no terminal
+    sleep_ms(1000);  // Aguarda 1 segundo antes de repetir a mensagem
   }
 }
