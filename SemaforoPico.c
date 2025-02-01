@@ -4,9 +4,9 @@
 #include "pico/stdlib.h"
 
 // define o numero do pino para cada led
-#define RED_LED_PIN 11
-#define YELLOW_LED_PIN 12
-#define GREEN_LED_PIN 13
+#define LED_R 13  // LED vermelho
+#define LED_Y 12  // LED amarelo
+#define LED_G 11  // LED verde
 // define tempo de espera entre cada acionamento
 #define INTERVAL_DURATION 3000
 
